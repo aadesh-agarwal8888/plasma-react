@@ -1,0 +1,30 @@
+File: ViewOrders.jsx
+#================================================#
+1] NativeSelect -> Why not Normal Select ?
+2] Paper corners rounded:  same as select in view Orders (everywhere)
+//Done -> 3] Do not show add button while vieweing the orders.
+4] Use AutoComplete instead of normal dropdown for customer select.
+
+CustomerDetails
+#================================================#
+1] Customer Details Component (Design and Implementation)
+2] Add Customer Address
+
+AddNewDialog
+#================================================#
+//Done -> Fields name should be changed when we are adding new Products.
+
+SmallBox view Dialog or Product view Dialog
+#================================================#
+1] If there are no small boxes to show, give a messege to used that no small box added.
+//Done -> 2] Change the background color of the Add button. 
+
+NewOrder
+#================================================#
+//Done -> 1] Add delete option for each card
+2]  Delete button should be on the top left corner
+
+BigBoxes
+#================================================#
+1] Proper alert with ok and cancel button while deleting the boxes.
+Done for big boxes, same has to be done with small boxes and products.
