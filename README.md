@@ -1,2 +1,2 @@
 Hello!
-Hello I'm Mayuri Jamkhedkar!!!
+This is a project to give blood and plasma Support in Covid-19 pandemic.
