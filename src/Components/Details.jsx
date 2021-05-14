@@ -64,9 +64,9 @@ class Details extends Component {
         else if (status === 1)
             formData.contact = change;
         else if (status === 2)
-            formData.bg = change
-        else if (status === 3)
             formData.shareContact = !formData.shareContact
+        else if (status === 3)
+            formData.bg = change
         else if (status === 4)
             formData.street = change
         else if (status === 5)
@@ -147,7 +147,7 @@ class Details extends Component {
                                 <Grid item>
                                     <Switch
                                         checked={this.state.formData.shareContact}
-                                        onChange={(e) => this.handleChange(e, 3)}
+                                        onChange={(e) => this.handleChange(e, 2)}
                                         name="shareContact"
                                         color="primary"
                                         inputProps={{ 'aria-label': 'secondary checkbox' }}
