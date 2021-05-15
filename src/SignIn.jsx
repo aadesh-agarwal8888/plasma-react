@@ -16,6 +16,12 @@ const useStyles = theme => ({
   //     backgroundColor: theme.palette.common.white
   //   }
   // },
+  root: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+  },
   paper: {
     // marginTop: theme.spacing(8),
     display: "flex",
@@ -40,7 +46,7 @@ class SignIn extends React.Component {
     const { classes } = this.props;
 
     return (
-      <Container component="main" maxWidth="xs">
+      <Container component="main" maxWidth="xs" className={classes.root}>
         <CssBaseline />
         <div className={classes.paper}>
           <Avatar className={classes.avatar}>
