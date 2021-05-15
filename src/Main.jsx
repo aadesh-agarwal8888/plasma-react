@@ -5,6 +5,7 @@ import SignIn from "./SignIn";
 import { BrowserRouter as Router } from "react-router-dom";
 
 import App from "./App";
+import axios from "axios";
 
 class Main extends Component {
   state = {
@@ -37,22 +38,40 @@ class Main extends Component {
       loggedIn: false
     });
 
-    new AuthService(config.baseUrl)
-      .login(username, password)
-      .then(() => {
-        this.setState({
-          loading: false,
-          loggedIn: true
-        });
-        // toast.info('Login successful!');
-      })
-      .catch(() => {
-        // toast.error('Email or password incorrect!');
-        this.setState({
-          loading: false,
-          loggedIn: false
-        });
+
+    axios.post(config.baseUrl + "/login", {
+      email_address: "parth@gmail.com",
+      password: "parth"
+    }, { headers: { "Access-Control-Allow-Origin": "*" } }).then(res => {
+      console.log("Call Success");
+      this.setState({
+        loading: false,
+        loggedIn: true
       });
+    }).catch(err => {
+      console.log("err");
+      this.setState({
+        loading: false,
+        loggedIn: false
+      });
+    })
+
+    // new AuthService(config.baseUrl)
+    //   .login(username, password)
+    //   .then(() => {
+    //     this.setState({
+    //       loading: false,
+    //       loggedIn: true
+    //     });
+    //     // toast.info('Login successful!');
+    //   })
+    //   .catch(() => {
+    //     // toast.error('Email or password incorrect!');
+    //     this.setState({
+    //       loading: false,
+    //       loggedIn: false
+    //     });
+    //   });
   };
 
   render() {
