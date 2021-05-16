@@ -12,6 +12,8 @@ import {
     withStyles
 } from "@material-ui/core";
 import ClearIcon from "@material-ui/icons/ClearRounded";
+import axios from "axios";
+import config from "./config";
 
 const styles = theme => ({
     fullfilled: {
@@ -23,6 +25,23 @@ const styles = theme => ({
 });
 class DetailsDialog extends Component {
     state = {}
+
+    handleDonationButton = () => {
+        if (this.props.isDoner) {
+            axios.post(`${config.baseUrl}/home/donor/my-donations?id=${this.props.details.ID}`).then(res => {
+                alert("Donation booked successfully. Thank you!");
+                this.props.closeDialog()
+            }).catch(err => {
+                alert("Error occured, Please try again later.")
+                window.location.reload();
+            })
+
+        }
+        else {
+            console.log("receiver");
+        }
+    }
+
     render() {
         var { classes, isDoner, details } = this.props
         return (
@@ -65,7 +84,7 @@ class DetailsDialog extends Component {
                             </Grid>
                             <Grid item>
                                 <Typography style={{ fontWeight: "bold" }}>
-                                    {details.name}
+                                    {details.Name}
                                 </Typography>
                             </Grid>
                         </Grid>
@@ -78,7 +97,7 @@ class DetailsDialog extends Component {
                             </Grid>
                             <Grid item >
                                 <Typography style={{ fontWeight: "bold" }}>
-                                    {details.contact}
+                                    {details.Contact}
                                 </Typography>
                             </Grid>
                         </Grid>}
@@ -92,7 +111,7 @@ class DetailsDialog extends Component {
                                 </Grid>
                                 <Grid item >
                                     <Typography style={{ fontWeight: "bold" }}>
-                                        {details.location}
+                                        {`${details.Address.Street},${details.Address.City},${details.Address.State},${details.Address.Pincode}`}
                                     </Typography>
                                 </Grid>
                             </Grid>
@@ -105,7 +124,7 @@ class DetailsDialog extends Component {
                                 </Grid>
                                 <Grid item >
                                     <Typography style={{ fontWeight: "bold" }}>
-                                        {details.bg}
+                                        {details.test}
                                     </Typography>
                                 </Grid>
                             </Grid>
@@ -118,7 +137,7 @@ class DetailsDialog extends Component {
                                 </Grid>
                                 <Grid item >
                                     <Typography style={{ fontWeight: "bold" }}>
-                                        {details.requiredDate.toDateString()}
+                                        {details.requiredDate ? details.requiredDate.toDateString() : "---"}
                                     </Typography>
                                 </Grid>
                             </Grid>
@@ -141,6 +160,7 @@ class DetailsDialog extends Component {
                         variant="contained"
                         color="primary"
                         className={classes.registerBtn}
+                        onClick={() => this.handleDonationButton()}
                     >{isDoner ? "Donate" : "Thank for Donation"}
 
                     </Button>

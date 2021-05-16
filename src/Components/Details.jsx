@@ -38,14 +38,16 @@ class Details extends Component {
         formData: {
             name: "",
             contact: "",
-            shareContact: false,
-            bg: "",
-            street: "",
-            city: "",
-            pincode: "",
-            state: "",
-            datePositive: new Date(),
-            dateNegative: new Date(),
+            show_contact: false,
+            blood_group: "",
+            address: {
+                street: "",
+                city: "",
+                pincode: "",
+                state: "",
+            },
+            date_tested_positive: new Date(),
+            date_tested_negative: new Date(),
             dateOfRequirement: new Date()
         }
     }
@@ -64,27 +66,27 @@ class Details extends Component {
         else if (status === 1)
             formData.contact = change;
         else if (status === 2)
-            formData.shareContact = !formData.shareContact
+            formData.show_contact = !formData.show_contact
         else if (status === 3)
-            formData.bg = change
+            formData.blood_group = change
         else if (status === 4)
-            formData.street = change
+            formData.address.street = change
         else if (status === 5)
-            formData.pincode = change
+            formData.address.pincode = Number(change)
         else if (status === 6)
-            formData.city = change
+            formData.address.city = change
         else if (status === 7)
-            formData.state = change
+            formData.address.state = change
         else if (status === 8)
-            formData.datePositive = change
+            formData.date_tested_positive = change
         else {
             if (this.props.isDoner) {
-                formData.dateNegative = change
+                formData.date_tested_negative = change
                 formData.dateOfRequirement = ""
             }
             else {
                 formData.dateOfRequirement = change
-                formData.dateNegative = ""
+                formData.date_tested_negative = ""
             }
         }
         this.setState({
@@ -92,10 +94,6 @@ class Details extends Component {
         })
     }
 
-
-    handleRegister = () => {
-        console.log("Donor: " + this.props.isDoner + ", registered: ", this.state.formData);
-    }
 
     render() {
         const { classes, isDoner } = this.props
@@ -146,9 +144,9 @@ class Details extends Component {
                             {isDoner ? (
                                 <Grid item>
                                     <Switch
-                                        checked={this.state.formData.shareContact}
+                                        checked={this.state.formData.show_contact}
                                         onChange={(e) => this.handleChange(e, 2)}
-                                        name="shareContact"
+                                        name="show_contact"
                                         color="primary"
                                         inputProps={{ 'aria-label': 'secondary checkbox' }}
                                     />
@@ -161,8 +159,8 @@ class Details extends Component {
                                 <InputLabel id="bgLabel">Blood Group</InputLabel>
                                 <Select
                                     labelId="bgLabel"
-                                    id="bg"
-                                    value={this.state.formData.bg}
+                                    id="blood_group"
+                                    value={this.state.formData.blood_group}
                                     onChange={(e) => this.handleChange(e, 3)}
                                     label="Blood Group"
                                 >
@@ -280,7 +278,7 @@ class Details extends Component {
                                         id="testPositive"
                                         format="dd MMM, yyyy"
                                         size="small"
-                                        value={this.state.formData.datePositive}
+                                        value={this.state.formData.date_tested_positive}
                                         onChange={(e) => this.handleChange(e, 8)}
                                         KeyboardButtonProps={{
                                             'aria-label': 'change date',
@@ -318,7 +316,7 @@ class Details extends Component {
                                         margin="normal"
                                         id="date-picker-dialog"
                                         format="dd MMM, yyyy"
-                                        value={isDoner ? this.state.formData.dateNegative : this.state.formData.dateOfRequirement}
+                                        value={isDoner ? this.state.formData.date_tested_negative : this.state.formData.dateOfRequirement}
                                         onChange={(e) => this.handleChange(e, 9)}
                                         KeyboardButtonProps={{
                                             'aria-label': 'change date',
@@ -331,7 +329,7 @@ class Details extends Component {
                                     variant="contained"
                                     color="primary"
                                     className={classes.registerBtn}
-                                    onClick={() => this.props.onRegister()}
+                                    onClick={() => this.props.onRegister(this.state.formData)}
                                 >
                                     Register as {`${person}`}
                                 </Button>

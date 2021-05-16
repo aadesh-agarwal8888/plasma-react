@@ -12,9 +12,10 @@ import Donor from "./Components/Donor"
 import Home from "./Components/Home";
 import Receiver from "./Components/Receiver";
 import Donations from "./Components/Donations";
+import AuthService from "./Auth";
 
 
-let theme = createMuiTheme({
+export let theme = createMuiTheme({
 
   typography: {
     h5: {
@@ -133,6 +134,7 @@ const styles = {
   root: {
     display: "flex",
     minHeight: "100vh"
+
   },
   drawer: {
     [theme.breakpoints.up("sm")]: {
@@ -141,6 +143,7 @@ const styles = {
     }
   },
   appContent: {
+
     flex: 1,
     display: "flex",
     flexDirection: "column"
@@ -157,12 +160,12 @@ class App extends React.Component {
     mobileOpen: false,
 
     routingPages: [
-      {
-        path: "/home",
-        exact: "exact",
-        component: Home,
-        admin: true
-      },
+      // {
+      //   path: "/home",
+      //   exact: "exact",
+      //   component: Home,
+      //   admin: true
+      // },
       {
         path: "/donation/new",
         exact: "exact",
@@ -190,7 +193,6 @@ class App extends React.Component {
 
   render() {
     const { classes } = this.props;
-
     return (
       <ThemeProvider theme={theme}>
         <div className={classes.root}>
@@ -212,10 +214,16 @@ class App extends React.Component {
             <Header onDrawerToggle={this.handleDrawerToggle} />
             <main className={classes.mainContent}>
               <Switch>
-                <Redirect from="/" exact to="/home" />
+
+                <Redirect from="/" exact to={new AuthService().checkCookie() ? "/donations" : "/login"} />
                 {this.state.routingPages.map((rp, id) => {
                   return (
+                    // new AuthService().checkCookie() ? (
+
                     <Route key={id} path={rp.path} exact component={rp.component} />
+                    // ) : (
+                    // <Redirect to="/login"></Redirect>
+                    // )
                   );
                 })}
               </Switch>

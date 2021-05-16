@@ -6,16 +6,17 @@ import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 import Toolbar from "@material-ui/core/Toolbar";
 import {
-  // Button, 
+  Button,
   Typography
 } from "@material-ui/core";
 import { withStyles } from "@material-ui/core/styles";
 // import AuthService from "../Auth";
-// import PowerIcon from "@material-ui/icons/PowerSettingsNew";
+import PowerIcon from "@material-ui/icons/PowerSettingsNew";
+import { theme } from "../App";
+import AuthService from "../Auth";
 // import { Link } from "react-router-dom";
 // import BooksIcon from "@material-ui/icons/MenuBookSharp";
-
-const styles = theme => ({
+const styles = () => ({
   title: {
     flexGrow: 1,
     letterSpacing: 2,
@@ -42,21 +43,25 @@ const styles = theme => ({
       marginLeft: 10
     }
   },*/
-  /*  logout: {
-     fontSize: 15,
-     [theme.breakpoints.down("xs")]: {
-       display: "none"
-     },
-     [theme.breakpoints.up("sm")]: {
-       marginLeft: 10
-     }
-   },
-   logoutButton: {
-     color: "grey",
-     [theme.breakpoints.down("xs")]: {
-       borderRadius: 50
-     }
-   } */
+  logout: {
+
+    fontSize: 15,
+    [theme.breakpoints.down("xs")]: {
+      display: "none"
+    },
+    [theme.breakpoints.up("sm")]: {
+      marginLeft: 10
+    }
+  },
+  logoutButton: {
+    // "&:hover,&:focus": {
+    //   backgroundColor:
+    // },
+    color: "white",
+    [theme.breakpoints.down("xs")]: {
+      borderRadius: 50
+    }
+  }
 });
 
 function Header(props) {
@@ -67,12 +72,15 @@ function Header(props) {
       <AppBar
         position="sticky"
         elevation={0}
-        style={{
-          backgroundColor: "primary",
-          alignItems: "center"
-        }}
+
       >
-        <Toolbar>
+        <Toolbar
+          style={{
+            display: "flex",
+            backgroundColor: "primary",
+            justifyContent: "space-between"
+          }}
+        >
           <Hidden smUp>
             <IconButton
               aria-label="Open drawer"
@@ -108,7 +116,11 @@ function Header(props) {
               Let us fight with COVID together!
           </Typography>
           </Hidden>
-          {/* <Button className={classes.logoutButton}>
+          <Button className={classes.logoutButton} onClick={() => {
+            new AuthService().logout();
+          }}
+            href="/"
+          >
             <PowerIcon
               style={{
                 color: "secondary"
@@ -117,12 +129,13 @@ function Header(props) {
             <Typography variant="caption" className={classes.logout}>
               {"Logout"}
             </Typography>
-          </Button> */}
+          </Button>
         </Toolbar>
       </AppBar>
       <AppBar
         component="div"
         className={classes.secondaryBar}
+
         color="primary"
         position="static"
         elevation={0}

@@ -15,6 +15,8 @@ import {
 } from "@material-ui/core";
 import ErrorIcon from "@material-ui/icons/ErrorOutlineRounded"
 import ConfirmationDialog from "./ConfirmationDialog";
+import axios from "axios";
+import config from "./config";
 
 
 const StyledTableCell = withStyles((theme) => ({
@@ -51,43 +53,9 @@ const styles = theme => ({
 class Donations extends Component {
     state = {
         patientDetails: {
-            name: "XYZ",
-            location: "Address XYZ",
-            bg: "A+ (A-Positive)",
-            contact: "11111111",
-            requiredDate: new Date()
         },
-        patientsTableHeader: ["Patient Name", "Patient Location", "Donation Date"],
-        patients: [
-            {
-                name: "XYZ",
-                location: "Address XYZ",
-                bg: "A+ (A-Positive)",
-                contact: "11111111",
-                requiredDate: new Date()
-            },
-            {
-                name: "XYZ",
-                location: "Address XYZ",
-                bg: "A+ (A-Positive)",
-                contact: "11111111",
-                requiredDate: new Date()
-            },
-            {
-                name: "XYZ",
-                location: "Address XYZ",
-                bg: "A+ (A-Positive)",
-                contact: "11111111",
-                requiredDate: new Date()
-            },
-            {
-                name: "XYZ",
-                location: "Address XYZ",
-                bg: "A+ (A-Positive)",
-                contact: "11111111",
-                requiredDate: new Date()
-            },
-        ],
+        donationsTableHeader: ["Patient Name", "Patient Location", "Donation Date"],
+        donations: [],
         activeDonation: true,
         donationStatus: {
             msg: "",
@@ -96,31 +64,62 @@ class Donations extends Component {
         confirmationStatusDialog: false
     }
 
+    componentDidMount() {
+        this.getpastDonations();
+    }
+
+    getpastDonations = () => {
+        axios.get(`${config.baseUrl}/home/donor/my-donations`).then(res => {
+            if (res.data) {
+                var { patientDetails, donations, activeDonation } = this.state;
+                donations = res.data;
+                if (donations[0].Donation_Details.Status === 11) {
+                    patientDetails = donations[0];
+                    activeDonation = true;
+                    donations.shift();
+                }
+                this.setState({
+                    patientDetails,
+                    donations,
+                    activeDonation
+                })
+            }
+        })
+    }
+
     handleDonationStatusBtn = (status) => {
         var { donationStatus, confirmationStatusDialog } = this.state
         confirmationStatusDialog = true
         donationStatus.status = status
         switch (status) {
-            case 0: donationStatus.msg = "DONATION SUCCESSFUL"
+            case 12: donationStatus.msg = "DONATION SUCCESSFUL"
                 break;
-            case 1: donationStatus.msg = "DONATION UNSUCCESSFUL"
+            case 5: donationStatus.msg = "DONATION UNSUCCESSFUL"
                 break;
-            case 2: donationStatus.msg = "REQUIREMENT ALREADY FULFILLED"
+            case 14: donationStatus.msg = "REQUIREMENT ALREADY FULFILLED"
                 break;
         }
+
+
 
         this.setState({ donationStatus, confirmationStatusDialog })
     }
 
     handleConfirmationStatus = () => {
+        var { donationStatus } = this.state
         console.log("Donation Status: ", this.state.donationStatus);
-        this.setState({ activeDonation: false, confirmationStatusDialog: false })
+        axios.put(`${config.baseUrl}/home/donor/my-donations?status=${donationStatus.status}`).then(() => {
+            this.setState({ activeDonation: false, confirmationStatusDialog: false })
+            this.getpastDonations();
+        }).catch(err => {
+            alert("Error Occured. Please try again")
+        })
     }
     render() {
         var { classes } = this.props
         return (
             <React.Fragment>
-                {this.state.activeDonation &&
+                {this.state.activeDonation && this.state.patientDetails.Receiver_Details &&
                     <React.Fragment>
                         <Grid container alignItems="center" justify="center" style={{ border: "2px solid red", padding: 7, marginBottom: 10 }}>
                             <Grid item >
@@ -128,7 +127,7 @@ class Donations extends Component {
                             </Grid>
                             <Grid item >
 
-                                <Typography variant="h6" style={{ whiteSpace: "pre-wrap" }}>{"A patient is waiting for you!"}</Typography>
+                                <Typography variant="h6" style={{ whiteSpace: "pre-wrap" }}>{"A donation is waiting for you!"}</Typography>
                             </Grid>
                         </Grid>
                         <Typography
@@ -149,7 +148,7 @@ class Donations extends Component {
                                     </Grid>
                                     <Grid item>
                                         <Typography style={{ fontWeight: "bold" }}>
-                                            {this.state.patientDetails.name}
+                                            {this.state.patientDetails.Receiver_Details.Name}
                                         </Typography>
                                     </Grid>
                                 </Grid>
@@ -162,7 +161,7 @@ class Donations extends Component {
                                     </Grid>
                                     <Grid item >
                                         <Typography style={{ fontWeight: "bold" }}>
-                                            {this.state.patientDetails.location}
+                                            {`${this.state.patientDetails.Receiver_Details.Address.Street},${this.state.patientDetails.Receiver_Details.Address.City},${this.state.patientDetails.Receiver_Details.Address.State},${this.state.patientDetails.Receiver_Details.Address.Pincode}`}
                                         </Typography>
                                     </Grid>
                                 </Grid>
@@ -175,7 +174,7 @@ class Donations extends Component {
                                     </Grid>
                                     <Grid item >
                                         <Typography style={{ fontWeight: "bold" }}>
-                                            {this.state.patientDetails.bg}
+                                            {this.state.patientDetails.Receiver_Details.Blood_Group}
                                         </Typography>
                                     </Grid>
                                 </Grid>
@@ -188,7 +187,7 @@ class Donations extends Component {
                                     </Grid>
                                     <Grid item >
                                         <Typography style={{ fontWeight: "bold" }}>
-                                            {this.state.patientDetails.requiredDate.toDateString()}
+                                            {this.state.patientDetails.Donation_Details.Commencement_Date.toString()}
                                         </Typography>
                                     </Grid>
                                 </Grid>
@@ -202,7 +201,7 @@ class Donations extends Component {
                                         variant="contained"
                                         className={classes.donationStatusBtn}
                                         style={{ backgroundColor: "yellowgreen" }}
-                                        onClick={() => this.handleDonationStatusBtn(0)}
+                                        onClick={() => this.handleDonationStatusBtn(12)}
                                     >
                                         Donation Successful
                                     </Button>
@@ -212,7 +211,7 @@ class Donations extends Component {
                                         variant="contained"
                                         className={classes.donationStatusBtn}
                                         style={{ backgroundColor: "orangered" }}
-                                        onClick={() => this.handleDonationStatusBtn(1)}
+                                        onClick={() => this.handleDonationStatusBtn(5)}
 
                                     >
                                         Donation Unsuccessful
@@ -223,7 +222,7 @@ class Donations extends Component {
                                         variant="contained"
                                         className={classes.donationStatusBtn}
                                         style={{ backgroundColor: "orange" }}
-                                        onClick={() => this.handleDonationStatusBtn(2)}
+                                        onClick={() => this.handleDonationStatusBtn(14)}
 
                                     >
                                         Requirement Already Fulfilled
@@ -247,17 +246,17 @@ class Donations extends Component {
                         <TableHead>
                             <TableRow>
 
-                                {this.state.patientsTableHeader.map((head, id) => (
+                                {this.state.donationsTableHeader.map((head, id) => (
                                     <StyledTableCell key={id}>{head}</StyledTableCell>
                                 ))}
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {this.state.patients.map((patient, id) => (
+                            {this.state.donations.length != 0 && this.state.donations.map((donation, id) => (
                                 <StyledTableRow key={id}>
-                                    <StyledTableCell>{patient.name}</StyledTableCell>
-                                    <StyledTableCell>{patient.location}</StyledTableCell>
-                                    <StyledTableCell>{patient.requiredDate.toDateString()}</StyledTableCell>
+                                    <StyledTableCell>{donation.Receiver_Details.Name}</StyledTableCell>
+                                    <StyledTableCell>{`${donation.Receiver_Details.Address.Street},${donation.Receiver_Details.Address.City},${donation.Receiver_Details.Address.State},${donation.Receiver_Details.Address.Pincode}`}</StyledTableCell>
+                                    <StyledTableCell>{donation.Donation_Details.Date_Of_Completion}</StyledTableCell>
                                 </StyledTableRow>
                             ))}
                         </TableBody>

@@ -124,13 +124,13 @@ class Navigator extends Component {
            route: "/settings",
            admin: true
          }, */
-      {
-        id: "Home",
-        icon: <HomeIcon />,
-        route: "/home",
-        admin: true,
-        parent: false
-      },
+      // {
+      //   id: "Home",
+      //   icon: <HomeIcon />,
+      //   route: "/home",
+      //   admin: true,
+      //   parent: false
+      // },
       {
         id: "I'm a Donor ",
         icon: <AccessibilityIcon />,

@@ -9,8 +9,11 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import { withStyles } from "@material-ui/styles";
+import { theme } from "./App";
+import AuthService from "./Auth";
+import config from "./Components/config";
 
-const useStyles = theme => ({
+const useStyles = () => ({
   // "@global": {
   //   body: {
   //     backgroundColor: theme.palette.common.white
@@ -30,7 +33,7 @@ const useStyles = theme => ({
   },
   avatar: {
     // margin: theme.spacing(1),
-    // backgroundColor: theme.palette.secondary.main
+    backgroundColor: theme.palette.primary.main
   },
   form: {
     width: "100%" // Fix IE 11 issue.
@@ -38,10 +41,15 @@ const useStyles = theme => ({
   },
   submit: {
     // margin: theme.spacing(3, 0, 2)
+    margin: "10px 0",
+    backgroundColor: theme.palette.primary.main
   }
 });
 
 class SignIn extends React.Component {
+
+
+
   render() {
     const { classes } = this.props;
 
