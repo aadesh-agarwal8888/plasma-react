@@ -42,7 +42,8 @@ class Donor extends Component {
         patientsTableHeader: ["Patient Name", "Patient Location", "Contact", "Requirement Date", ""],
         patients: [],
         selectedPatient: {},
-        detailsDialog: false
+        detailsDialog: false,
+        errMsg: ""
     }
 
     componentDidMount() {
@@ -63,6 +64,9 @@ class Donor extends Component {
                         })
                     }
                 }).catch(err => {
+                    this.setState({
+                        errMsg: err.response.data
+                    })
                     console.log("error fetching doners: ", err);
                 })
             }
@@ -136,14 +140,12 @@ class Donor extends Component {
                                 </TableHead>
                                 <TableBody>
                                     {this.state.patients.length != 0 ? (
-
-
                                         this.state.patients.map((patient, id) => (
                                             <StyledTableRow key={id}>
                                                 <StyledTableCell>{patient.Name}</StyledTableCell>
                                                 <StyledTableCell>{`${patient.Address.Street},${patient.Address.City},${patient.Address.State},${patient.Address.Pincode}`}</StyledTableCell>
                                                 <StyledTableCell>{patient.Contact}</StyledTableCell>
-                                                <StyledTableCell>{patient.requiredDate ? patient.requiredDate.toDateString() : "---"}</StyledTableCell>
+                                                <StyledTableCell>{patient.Date_Of_Requirement ? patient.Date_Of_Requirement : "---"}</StyledTableCell>
 
                                                 <StyledTableCell>
                                                     <Button
@@ -158,8 +160,8 @@ class Donor extends Component {
                                         ))
 
                                     ) : (
-                                        <StyledTableRow key={"noReveivers"}>
-                                            No receivers Found
+                                        <StyledTableRow key={"noReveivers"} style={{ textTransform: "capitalize" }}>
+                                            {this.state.errMsg !== "" ? this.state.errMsg : "No receivers Found"}
                                         </StyledTableRow>
                                     )}
 

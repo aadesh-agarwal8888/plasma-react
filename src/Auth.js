@@ -27,7 +27,11 @@ export default class AuthService {
       .then(res => {
         // console.log(res.data.token); // Setting the token in localStorage
         // this.setToken(res.data.token); // Setting the token in localStorage
+
         console.log(res);
+        if (Cookies.get("token") === null) {
+          return Promise.reject("Email or Passowrd incorrect!");
+        }
         return Promise.resolve(res);
       })
       .catch(() => {

@@ -54,12 +54,13 @@ class Donations extends Component {
     state = {
         patientDetails: {
         },
-        donationsTableHeader: ["Patient Name", "Patient Location", "Donation Date"],
+        donationsTableHeader: ["Patient Name", "Patient Location", "Donation Date", "Status"],
         donations: [],
         activeDonation: true,
         donationStatus: {
             msg: "",
-            status: 0
+            status: 0,
+            color: ""
         },
         confirmationStatusDialog: false
     }
@@ -87,30 +88,30 @@ class Donations extends Component {
         })
     }
 
+    getDonationStatus = (status) => {
+        switch (status) {
+            case 12: return { msg: "DONATION SUCCESSFUL", color: "green", status }
+                break;
+            case 13: return { msg: "DONATION UNSUCCESSFUL", color: "red", status }
+                break;
+            case 14: return { msg: "REQUIREMENT ALREADY FULFILLED", color: "orangeRed", status }
+                break;
+        }
+    }
+
     handleDonationStatusBtn = (status) => {
         var { donationStatus, confirmationStatusDialog } = this.state
         confirmationStatusDialog = true
-        donationStatus.status = status
-        switch (status) {
-            case 12: donationStatus.msg = "DONATION SUCCESSFUL"
-                break;
-            case 5: donationStatus.msg = "DONATION UNSUCCESSFUL"
-                break;
-            case 14: donationStatus.msg = "REQUIREMENT ALREADY FULFILLED"
-                break;
-        }
-
-
-
+        donationStatus = this.getDonationStatus(status);
         this.setState({ donationStatus, confirmationStatusDialog })
     }
 
     handleConfirmationStatus = () => {
         var { donationStatus } = this.state
-        console.log("Donation Status: ", this.state.donationStatus);
+        console.log("Donation Status: ", donationStatus);
         axios.put(`${config.baseUrl}/home/donor/my-donations?status=${donationStatus.status}`).then(() => {
-            this.setState({ activeDonation: false, confirmationStatusDialog: false })
             this.getpastDonations();
+            this.setState({ activeDonation: false, confirmationStatusDialog: false })
         }).catch(err => {
             alert("Error Occured. Please try again")
         })
@@ -211,7 +212,7 @@ class Donations extends Component {
                                         variant="contained"
                                         className={classes.donationStatusBtn}
                                         style={{ backgroundColor: "orangered" }}
-                                        onClick={() => this.handleDonationStatusBtn(5)}
+                                        onClick={() => this.handleDonationStatusBtn(13)}
 
                                     >
                                         Donation Unsuccessful
@@ -239,7 +240,7 @@ class Donations extends Component {
                     style={{ fontWeight: "bold", fontSize: 20 }}
                 >
                     My Donations
-    </Typography>
+                 </Typography>
                 <TableContainer component={Paper} style={{ marginTop: 10 }}>
 
                     <Table>
@@ -257,6 +258,20 @@ class Donations extends Component {
                                     <StyledTableCell>{donation.Receiver_Details.Name}</StyledTableCell>
                                     <StyledTableCell>{`${donation.Receiver_Details.Address.Street},${donation.Receiver_Details.Address.City},${donation.Receiver_Details.Address.State},${donation.Receiver_Details.Address.Pincode}`}</StyledTableCell>
                                     <StyledTableCell>{donation.Donation_Details.Date_Of_Completion}</StyledTableCell>
+                                    <StyledTableCell>{() => {
+                                        var status = this.getDonationStatus(donation.Donation_Details.Status);
+                                        return status.msg;
+                                        return (
+                                            <Grid container alignItems="center" justify="flex-start" spacing={1} >
+                                                <Grid item >
+                                                    <span style={{ height: 10, width: 10, backgroundColor: status.color, borderRadius: "50%", display: "inline-block" }}></span>
+                                                </Grid>
+                                                <Grid item >
+                                                    {status.msg}
+                                                </Grid>
+                                            </Grid>
+                                        )
+                                    }}</StyledTableCell>
                                 </StyledTableRow>
                             ))}
                         </TableBody>

@@ -139,15 +139,15 @@ class Navigator extends Component {
         open: true,
         children: [
           {
-            id: "New Donation",
-            icon: <FavoriteIcon />,
-            route: "/donation/new",
-            admin: true,
-          },
-          {
             id: "My Donations",
             icon: <RecentActorsIcon />,
             route: "/donations",
+            admin: true,
+          },
+          {
+            id: "New Donation",
+            icon: <FavoriteIcon />,
+            route: "/donation/new",
             admin: true,
           },
         ]

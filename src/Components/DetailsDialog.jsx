@@ -89,7 +89,7 @@ class DetailsDialog extends Component {
                             </Grid>
                         </Grid>
 
-                        {!isDoner && <Grid item container xs={12} spacing={1}>
+                        <Grid item container xs={12} spacing={1}>
                             <Grid item xs={12} sm="auto" >
                                 <Typography color="textSecondary" style={{ fontWeight: "bold" }}>
                                     {"Contact:"}
@@ -100,7 +100,7 @@ class DetailsDialog extends Component {
                                     {details.Contact}
                                 </Typography>
                             </Grid>
-                        </Grid>}
+                        </Grid>
 
                         {isDoner && <>
                             <Grid item container xs={12} spacing={1}>
@@ -124,7 +124,7 @@ class DetailsDialog extends Component {
                                 </Grid>
                                 <Grid item >
                                     <Typography style={{ fontWeight: "bold" }}>
-                                        {details.test}
+                                        {details.Blood_Group_Required}
                                     </Typography>
                                 </Grid>
                             </Grid>
@@ -137,7 +137,7 @@ class DetailsDialog extends Component {
                                 </Grid>
                                 <Grid item >
                                     <Typography style={{ fontWeight: "bold" }}>
-                                        {details.requiredDate ? details.requiredDate.toDateString() : "---"}
+                                        {details.Date_Of_Requirement ? details.Date_Of_Requirement : "---"}
                                     </Typography>
                                 </Grid>
                             </Grid>
