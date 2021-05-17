@@ -13,10 +13,11 @@ import {
     Button,
 
 } from "@material-ui/core";
-import ErrorIcon from "@material-ui/icons/ErrorOutlineRounded"
 import ConfirmationDialog from "./ConfirmationDialog";
 import axios from "axios";
 import config from "./config";
+import DonationStatus from "./DonationStatus";
+import ErrorIcon from "@material-ui/icons/ErrorOutlineRounded";
 
 
 const StyledTableCell = withStyles((theme) => ({
@@ -116,122 +117,43 @@ class Donations extends Component {
             alert("Error Occured. Please try again")
         })
     }
+
+    getDonationStatusHeader = () => {
+        var { patientDetails } = this.state;
+        var length = patientDetails
+        var color = "red";
+        var msg = "A Donor is waiting for you!";
+        if (length == 0) {
+            color = "green";
+            msg = "Currently no donations in your calender."
+        }
+
+        return (
+            <Grid container alignItems="center" justify="center" style={{ border: "2px solid red", padding: 7, marginBottom: 10 }}>
+                <Grid item >
+                    <ErrorIcon style={{ height: 40, width: 40, color: color, marginBottom: 0, marginRight: 10 }}></ErrorIcon>
+                </Grid>
+                <Grid item >
+                    <Typography variant="h6" style={{ whiteSpace: "pre-wrap" }}>{msg}</Typography>
+                </Grid>
+            </Grid>
+        )
+    }
+
     render() {
         var { classes } = this.props
         return (
             <React.Fragment>
                 {this.state.activeDonation && this.state.patientDetails.Receiver_Details &&
-                    <React.Fragment>
-                        <Grid container alignItems="center" justify="center" style={{ border: "2px solid red", padding: 7, marginBottom: 10 }}>
-                            <Grid item >
-                                <ErrorIcon style={{ height: 40, width: 40, color: "red", marginBottom: 0, marginRight: 10 }}></ErrorIcon>
-                            </Grid>
-                            <Grid item >
-
-                                <Typography variant="h6" style={{ whiteSpace: "pre-wrap" }}>{"A donation is waiting for you!"}</Typography>
-                            </Grid>
-                        </Grid>
-                        <Typography
-                            variant="caption"
-                            color="textSecondary"
-                            style={{ fontWeight: "bold", fontSize: 20 }}
-                        >
-                            Details
-                        </Typography>
-                        <Paper className={classes.paper} style={{ marginBottom: 20 }}>
-                            <Grid container spacing={2} style={{ overflow: "hidden" }}>
-
-                                <Grid item container xs={12} spacing={1}>
-                                    <Grid item xs={12} sm="auto">
-                                        <Typography color="textSecondary" style={{ fontWeight: "bold" }}>
-                                            {"Name:"}
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item>
-                                        <Typography style={{ fontWeight: "bold" }}>
-                                            {this.state.patientDetails.Receiver_Details.Name}
-                                        </Typography>
-                                    </Grid>
-                                </Grid>
-
-                                <Grid item container xs={12} spacing={1}>
-                                    <Grid item xs={12} sm="auto">
-                                        <Typography color="textSecondary" style={{ fontWeight: "bold" }}>
-                                            {"Location:"}
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item >
-                                        <Typography style={{ fontWeight: "bold" }}>
-                                            {`${this.state.patientDetails.Receiver_Details.Address.Street},${this.state.patientDetails.Receiver_Details.Address.City},${this.state.patientDetails.Receiver_Details.Address.State},${this.state.patientDetails.Receiver_Details.Address.Pincode}`}
-                                        </Typography>
-                                    </Grid>
-                                </Grid>
-
-                                <Grid item container xs={12} spacing={1}>
-                                    <Grid item xs={12} sm="auto">
-                                        <Typography color="textSecondary" style={{ fontWeight: "bold" }}>
-                                            {"Blood Group:"}
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item >
-                                        <Typography style={{ fontWeight: "bold" }}>
-                                            {this.state.patientDetails.Receiver_Details.Blood_Group}
-                                        </Typography>
-                                    </Grid>
-                                </Grid>
-
-                                <Grid item container xs={12} spacing={1}>
-                                    <Grid item xs={12} sm="auto">
-                                        <Typography color="textSecondary" style={{ fontWeight: "bold" }}>
-                                            {"Date of Requirement:"}
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item >
-                                        <Typography style={{ fontWeight: "bold" }}>
-                                            {this.state.patientDetails.Donation_Details.Commencement_Date.toString()}
-                                        </Typography>
-                                    </Grid>
-                                </Grid>
-
-
-                            </Grid>
-                            <br></br>
-                            <Grid container spacing={1} alignItems="center" justify="space-around">
-                                <Grid item xs={12} sm="auto">
-                                    <Button
-                                        variant="contained"
-                                        className={classes.donationStatusBtn}
-                                        style={{ backgroundColor: "yellowgreen" }}
-                                        onClick={() => this.handleDonationStatusBtn(12)}
-                                    >
-                                        Donation Successful
-                                    </Button>
-                                </Grid>
-                                <Grid item xs={12} sm="auto">
-                                    <Button
-                                        variant="contained"
-                                        className={classes.donationStatusBtn}
-                                        style={{ backgroundColor: "orangered" }}
-                                        onClick={() => this.handleDonationStatusBtn(13)}
-
-                                    >
-                                        Donation Unsuccessful
-                                    </Button>
-                                </Grid>
-                                <Grid item xs={12} sm="auto">
-                                    <Button
-                                        variant="contained"
-                                        className={classes.donationStatusBtn}
-                                        style={{ backgroundColor: "orange" }}
-                                        onClick={() => this.handleDonationStatusBtn(14)}
-
-                                    >
-                                        Requirement Already Fulfilled
-                                    </Button>
-                                </Grid>
-                            </Grid>
-                        </Paper>
-                    </React.Fragment>
+                    <>
+                        {this.getDonationStatusHeader()}
+                        <DonationStatus
+                            personDetails={this.state.patientDetails.Receiver_Details}
+                            donationDetails={this.state.patientDetails.Donation_Details}
+                            isDonor={true}
+                            handleDonationStatusBtn={this.handleDonationStatusBtn}
+                        ></DonationStatus>
+                    </>
                 }
 
                 <Typography
@@ -258,7 +180,7 @@ class Donations extends Component {
                                     <StyledTableCell>{donation.Receiver_Details.Name}</StyledTableCell>
                                     <StyledTableCell>{`${donation.Receiver_Details.Address.Street},${donation.Receiver_Details.Address.City},${donation.Receiver_Details.Address.State},${donation.Receiver_Details.Address.Pincode}`}</StyledTableCell>
                                     <StyledTableCell>{donation.Donation_Details.Date_Of_Completion}</StyledTableCell>
-                                    <StyledTableCell>{() => {
+                                    {/* <StyledTableCell>{() => {
                                         var status = this.getDonationStatus(donation.Donation_Details.Status);
                                         return status.msg;
                                         return (
@@ -271,7 +193,8 @@ class Donations extends Component {
                                                 </Grid>
                                             </Grid>
                                         )
-                                    }}</StyledTableCell>
+                                    }}</StyledTableCell> */}
+                                    <StyledTableCell>{this.getDonationStatus(donation.Donation_Details.Status).msg}</StyledTableCell>
                                 </StyledTableRow>
                             ))}
                         </TableBody>

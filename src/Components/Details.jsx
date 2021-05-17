@@ -38,8 +38,9 @@ class Details extends Component {
         formData: {
             name: "",
             contact: "",
+            Age: 18,
             show_contact: false,
-            blood_group: "",
+            Blood_Group_Required: "",
             address: {
                 street: "",
                 city: "",
@@ -48,7 +49,7 @@ class Details extends Component {
             },
             date_tested_positive: new Date(),
             date_tested_negative: new Date(),
-            dateOfRequirement: new Date()
+            Date_Of_Requirement: new Date()
         }
     }
 
@@ -68,7 +69,9 @@ class Details extends Component {
         else if (status === 2)
             formData.show_contact = !formData.show_contact
         else if (status === 3)
-            formData.blood_group = change
+            formData.Blood_Group_Required = change
+        else if (status === 9)
+            formData.Age = Number(change);
         else if (status === 4)
             formData.address.street = change
         else if (status === 5)
@@ -82,10 +85,10 @@ class Details extends Component {
         else {
             if (this.props.isDoner) {
                 formData.date_tested_negative = change
-                formData.dateOfRequirement = ""
+                formData.Date_Of_Requirement = ""
             }
             else {
-                formData.dateOfRequirement = change
+                formData.Date_Of_Requirement = change
                 formData.date_tested_negative = ""
             }
         }
@@ -159,8 +162,8 @@ class Details extends Component {
                                 <InputLabel id="bgLabel">Blood Group</InputLabel>
                                 <Select
                                     labelId="bgLabel"
-                                    id="blood_group"
-                                    value={this.state.formData.blood_group}
+                                    id="Blood_Group_Required"
+                                    value={this.state.formData.Blood_Group_Required}
                                     onChange={(e) => this.handleChange(e, 3)}
                                     label="Blood Group"
                                 >
@@ -171,10 +174,23 @@ class Details extends Component {
                                     <MenuItem value={"O+"}>O+</MenuItem>
                                     <MenuItem value={"O-"}>O-</MenuItem>
                                     <MenuItem value={"AB+"}>AB+</MenuItem>
-                                    <MenuItem value={"AB+"}>AB-</MenuItem>
+                                    <MenuItem value={"AB-"}>AB-</MenuItem>
 
                                 </Select>
                             </FormControl>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                className={classes.formField}
+                                label={`${person}'s Age`}
+                                id="Age"
+                                type="number"
+                                value={this.state.formData.Age}
+                                placeholder={`Please enter ${person}'s Age`}
+                                variant="outlined"
+                                size="small"
+                                onChange={(e) => this.handleChange(e, 9)}
+                            />
                         </Grid>
                     </Grid>
                 </Paper>
@@ -316,8 +332,8 @@ class Details extends Component {
                                         margin="normal"
                                         id="date-picker-dialog"
                                         format="dd MMM, yyyy"
-                                        value={isDoner ? this.state.formData.date_tested_negative : this.state.formData.dateOfRequirement}
-                                        onChange={(e) => this.handleChange(e, 9)}
+                                        value={isDoner ? this.state.formData.date_tested_negative : this.state.formData.Date_Of_Requirement}
+                                        onChange={(e) => this.handleChange(e, 10)}
                                         KeyboardButtonProps={{
                                             'aria-label': 'change date',
                                         }}

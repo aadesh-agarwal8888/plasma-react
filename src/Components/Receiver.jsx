@@ -13,10 +13,11 @@ import {
     Grid,
     Button,
 } from "@material-ui/core";
-
 import Details from "./Details";
 import DetailsDialog from "./DetailsDialog";
 import ConfirmationDialog from "./ConfirmationDialog";
+import axios from "axios";
+import config from "./config";
 
 const StyledTableCell = withStyles((theme) => ({
     head: {
@@ -46,30 +47,45 @@ const styles = theme => ({
 });
 class Receiver extends Component {
     state = {
+        loading: false,
         registered: false,
         donorsTableHeader: ["Donor Name", "Donor Contact", ""],
-        donors: [
-            {
-                name: "XYZ",
-                contact: "11111111",
-            },
-            {
-                name: "XYZ",
-                contact: "11111111"
-            },
-            {
-                name: "XYZ",
-                contact: "11111111",
-
-            },
-            {
-                name: "XYZ",
-                contact: "11111111",
-            },
-        ],
+        donors: [],
         selectedReceiver: {},
         completeConfirmationDialog: false,
-        detailsDialog: false
+        detailsDialog: false,
+        errMsg: "",
+        loadingMsg: ""
+    }
+
+    componentDidMount() {
+        this.checkReceiver();
+    }
+
+    checkReceiver = () => {
+        return axios.get(`${config.baseUrl}/home/receiver`).then(res => {
+            this.setState({
+                registered: res.data.registered,
+                loading: false
+            })
+            if (res.data.registered) {
+                axios.get(`${config.baseUrl}/home/receiver/find-donors`).then(res => {
+                    if (res.data) {
+
+                        this.setState({
+                            donors: res.data
+                        })
+                    }
+                }).catch(err => {
+                    this.setState({
+                        errMsg: err.response.data
+                    })
+                    console.log("error fetching receivers: ", err);
+                })
+            }
+        }).catch(err => {
+            console.log(err);
+        })
     }
 
     selectReceiver = (receiver) => {
@@ -96,6 +112,17 @@ class Receiver extends Component {
             completeConfirmationDialog: false
         })
     }
+    onRegister = (details) => {
+        console.log("Doner details: ", details);
+        axios.post(`${config.baseUrl}/home/receiver`, details).then(res => {
+            console.log(res);
+            this.setState({ registered: true })
+        }).catch(err => {
+            console.log(err.response.data);
+            alert("Error occured. Please try again fater some time.")
+        })
+    }
+
 
     render() {
         const { classes } = this.props
@@ -105,7 +132,7 @@ class Receiver extends Component {
 
                     <Details
                         isDoner={false}
-                        onRegister={() => { this.setState({ registered: true }) }}
+                        onRegister={this.onRegister}
 
                     ></Details>
                 ) : (
@@ -129,20 +156,28 @@ class Receiver extends Component {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {this.state.donors.map((donor, id) => (
-                                        <StyledTableRow key={id}>
-                                            <StyledTableCell>{donor.name}</StyledTableCell>
-                                            <StyledTableCell>{donor.contact}</StyledTableCell>
-                                            <StyledTableCell>
-                                                <Button
-                                                    color="primary" style={{ textDecoration: "underline" }}
-                                                    onClick={() => this.selectReceiver(donor)}
-                                                >
-                                                    View Donor Details
-                                                </Button>
-                                            </StyledTableCell>
+                                    {this.state.donors.length !== 0 ? (
+
+                                        this.state.donors.map((donor, id) => (
+                                            <StyledTableRow key={id}>
+                                                <StyledTableCell>{donor.Name}</StyledTableCell>
+                                                <StyledTableCell>{donor.Contact}</StyledTableCell>
+                                                <StyledTableCell>
+                                                    <Button
+                                                        color="primary" style={{ textDecoration: "underline" }}
+                                                        onClick={() => this.selectReceiver(donor)}
+                                                    >
+                                                        View Donor Details
+                                                   </Button>
+                                                </StyledTableCell>
+                                            </StyledTableRow>
+                                        ))
+                                    ) : (
+                                        <StyledTableRow key={"noDonor"} style={{ textTransform: "capitalize" }}>
+                                            {this.state.errMsg !== "" ? this.state.errMsg : "No Donors Found"}
                                         </StyledTableRow>
-                                    ))}
+                                    )
+                                    }
                                 </TableBody>
                             </Table>
                         </TableContainer>
@@ -168,7 +203,6 @@ class Receiver extends Component {
                         closeDialog={this.handleDetailsDialogClose}
                         isDoner={false}
                         details={this.state.selectedReceiver}
-
                     >
                     </DetailsDialog>}
                 {this.state.completeConfirmationDialog &&

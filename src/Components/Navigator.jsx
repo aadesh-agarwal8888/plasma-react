@@ -154,11 +154,27 @@ class Navigator extends Component {
       },
       {
         id: "I'm a Receiver ",
-        icon: <AccessibleIcon />,
-        route: "/receiver",
+        icon: <AccessibilityIcon />,
         admin: true,
-        parent: false
-      },
+        parent: true,
+        open: true,
+        children: [
+          {
+            id: "Find Donors",
+            icon: <AccessibleIcon />,
+            route: "/receiver/donors",
+            admin: true,
+            parent: false
+          },
+          {
+            id: "My Donors ",
+            icon: <AccessibleIcon />,
+            route: "/receiver/myDonor",
+            admin: true,
+            parent: false
+          },
+        ]
+      }
 
     ]
   };

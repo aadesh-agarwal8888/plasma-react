@@ -13,6 +13,7 @@ import Home from "./Components/Home";
 import Receiver from "./Components/Receiver";
 import Donations from "./Components/Donations";
 import AuthService from "./Auth";
+import MyDonors from "./Components/MyDonors";
 
 
 export let theme = createMuiTheme({
@@ -179,9 +180,15 @@ class App extends React.Component {
         admin: true
       },
       {
-        path: "/receiver",
+        path: "/receiver/donors",
         exact: "exact",
         component: Receiver,
+        admin: true
+      },
+      {
+        path: "/receiver/myDonor",
+        exact: "exact",
+        component: MyDonors,
         admin: true
       },
     ]
@@ -218,12 +225,7 @@ class App extends React.Component {
                 <Redirect from="/" exact to={new AuthService().checkCookie() ? "/donations" : "/login"} />
                 {this.state.routingPages.map((rp, id) => {
                   return (
-                    // new AuthService().checkCookie() ? (
-
                     <Route key={id} path={rp.path} exact component={rp.component} />
-                    // ) : (
-                    // <Redirect to="/login"></Redirect>
-                    // )
                   );
                 })}
               </Switch>
