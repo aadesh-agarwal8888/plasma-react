@@ -222,7 +222,7 @@ class App extends React.Component {
             <main className={classes.mainContent}>
               <Switch>
 
-                <Redirect from="/" exact to={new AuthService().checkCookie() ? "/donations" : "/login"} />
+                <Redirect from="/" exact to={"/donations"} />
                 {this.state.routingPages.map((rp, id) => {
                   return (
                     <Route key={id} path={rp.path} exact component={rp.component} />

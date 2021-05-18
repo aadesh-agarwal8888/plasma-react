@@ -17,6 +17,7 @@ import AuthService from "../Auth";
 import config from "./config";
 import Details from "./Details";
 import DetailsDialog from "./DetailsDialog";
+import Loading from "./Loading";
 
 
 const StyledTableCell = withStyles((theme) => ({
@@ -43,7 +44,9 @@ class Donor extends Component {
         patients: [],
         selectedPatient: {},
         detailsDialog: false,
-        errMsg: ""
+        errMsg: "",
+        loading: true,
+        loadingMsg: "Checking Registration..."
     }
 
     componentDidMount() {
@@ -53,29 +56,36 @@ class Donor extends Component {
     checkDoner = () => {
         return axios.get(`${config.baseUrl}/home/donor`).then(res => {
             this.setState({
-                registered: res.data.registered
+                registered: res.data.registered,
             })
             if (res.data.registered) {
+                this.setState({ loadingMsg: "Fetching donor list..." })
                 axios.get(`${config.baseUrl}/home/donor/find-receivers`).then(res => {
-                    if (res.data) {
 
-                        this.setState({
-                            patients: res.data
-                        })
-                    }
+                    this.setState({
+                        patients: res.data ? res.data : [],
+                        loading: false
+                    })
+
                 }).catch(err => {
                     this.setState({
-                        errMsg: err.response.data
+                        errMsg: err.response.data,
+                        loading: false
                     })
                     console.log("error fetching doners: ", err);
                 })
             }
+            else {
+                this.setState({ loading: false })
+            }
         }).catch(err => {
             console.log(err);
+            this.setState({
+                loading: false
+            })
+            window.location.reload();
         })
     }
-
-
 
     selectPatient = (patient) => {
         var { selectedPatient, detailsDialog } = this.state
@@ -108,6 +118,11 @@ class Donor extends Component {
     }
 
     render() {
+        if (this.state.loading) {
+            return (
+                <Loading loading={this.state.loading} msg={this.state.loadingMsg}></Loading>
+            );
+        }
         return (
             <React.Fragment>
                 {!this.state.registered ? (
@@ -116,7 +131,6 @@ class Donor extends Component {
                         isDoner={true}
                         onRegister={this.onRegister}
                     >
-
                     </Details>
                 ) : (
                     <>
