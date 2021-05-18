@@ -10,6 +10,7 @@ import {
 
 } from "@material-ui/core";
 import ConfirmationDialog from "./ConfirmationDialog";
+import Loading from "./Loading";
 class MyDonors extends Component {
     state = {
         donorDetails: [],
@@ -22,7 +23,9 @@ class MyDonors extends Component {
             status: 0,
             color: ""
         },
-        confirmationStatusDialog: false
+        confirmationStatusDialog: false,
+        loading: true,
+        loadingMsg: "Fetching awaiting donors..."
     }
 
     componentDidMount() {
@@ -31,13 +34,16 @@ class MyDonors extends Component {
 
     getMyDonors = () => {
         axios.get(`${config.baseUrl}/home/receiver/my-donors`).then(res => {
+
             if (res.data) {
                 var { donorDetails } = this.state;
                 donorDetails = res.data;
                 this.setState({ donorDetails })
             }
+            this.setState({ loading: false })
         }).catch(err => {
             console.log(err.response.data);
+            this.setState({ loading: false })
             alert("Error fetching current donors.")
         })
     }
@@ -72,13 +78,13 @@ class MyDonors extends Component {
         var msg = "Donors are waiting for you!";
         if (length == 0) {
             color = "";
-            msg = "Currently no Donors available"
+            msg = "Sorry! Currently no Donors available."
         }
         else if (length == 1) {
             msg = "A Donor is waiting for you!"
         }
         return (
-            <Grid container alignItems="center" justify="center" style={{ border: "2px solid red", padding: 7, marginBottom: 10 }}>
+            <Grid container alignItems="center" justify="center" style={{ border: `2px solid ${color}`, padding: 7, marginBottom: 10 }}>
                 <Grid item >
                     <ErrorIcon style={{ height: 40, width: 40, color: color, marginBottom: 0, marginRight: 10 }}></ErrorIcon>
                 </Grid>
@@ -100,13 +106,19 @@ class MyDonors extends Component {
     }
 
     render() {
+        if (this.state.loading) {
+            return (
+                <Loading loading={this.state.loading} msg={this.state.loadingMsg}></Loading>
+            );
+        }
+
         return (
             <React.Fragment>
+                <>
 
-                { this.state.donorDetails.length ? (
-                    <>
-                        {this.getDonationStatusHeader()}
-                        {this.state.donorDetails.map((donor, index) => (
+                    {this.getDonationStatusHeader()}
+                    { this.state.donorDetails.length ? (
+                        this.state.donorDetails.map((donor, index) => (
                             <DonationStatus
                                 key={index}
                                 personDetails={donor.Donor_Details}
@@ -114,9 +126,10 @@ class MyDonors extends Component {
                                 isDonor={false}
                                 handleDonationStatusBtn={this.handleDonationStatusBtn}
                             ></DonationStatus>
-                        ))}
-                    </>) : (undefined)
-                }
+                        ))
+                    ) : (undefined)
+                    }
+                </>
                 {this.state.confirmationStatusDialog && <ConfirmationDialog
                     setConfirmationDialog={this.state.confirmationStatusDialog}
                     onCancel={() => { this.setState({ confirmationStatusDialog: false }) }}

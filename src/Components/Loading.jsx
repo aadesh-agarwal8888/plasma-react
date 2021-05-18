@@ -12,20 +12,17 @@ const styles = theme => ({
 class Loading extends Component {
   state = {};
   render() {
-    const { classes } = this.props
+    const { classes, msg, loading } = this.props
 
     return (
-        <Backdrop open={this.props.loading} className={classes.backdrop}>
-          <span style={{ marginRight: 10 }}>{this.props.loadingMsg}</span>
-          <CircularProgress
-            style={{
-              color: "inherit",
-              height: 80,
-              width: 80,
-              marginLeft: "10%"
-            }}
-          />
-        </Backdrop>
+      <Backdrop open={loading} className={classes.backdrop}>
+        <span style={{ marginRight: 10 }}>{msg}</span>
+        <CircularProgress
+          style={{
+            color: "inherit",
+          }}
+        />
+      </Backdrop>
     );
   }
 }

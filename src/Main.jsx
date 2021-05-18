@@ -13,7 +13,8 @@ import Loading from "./Components/Loading"
 class Main extends Component {
   state = {
     loading: true,
-    loggedIn: false
+    loggedIn: false,
+    loadingMsg: ""
   };
 
   componentDidMount() {
@@ -22,6 +23,7 @@ class Main extends Component {
     // })
     // new AuthService().logout();
     // console.log("main");
+
     new AuthService().checkCookie().then(res => {
 
       this.setState({
@@ -29,19 +31,20 @@ class Main extends Component {
         loggedIn: true
       });
     }).catch(err => {
-
+      console.log("no cookie");
+      this.setState({
+        loading: false,
+        loggedIn: false
+      });
     })
-    this.setState({
-      loading: false,
-      loggedIn: false
-    });
 
   }
 
   login = (username, password) => {
     this.setState({
       loading: true,
-      loggedIn: false
+      loggedIn: false,
+      loadingMsg: "Logging in..."
     })
     new AuthService()
       .login(username, password)
@@ -64,11 +67,11 @@ class Main extends Component {
   };
 
   render() {
-    // if (this.state.loading) {
-    //   return (
-    //     <Loading loadingMsg={"Logging In..."}></Loading>
-    //   );
-    // }
+    if (this.state.loading) {
+      return (
+        <Loading loading={this.state.loading} msg={this.state.loadingMsg}></Loading>
+      );
+    }
 
     return (
       <Switch>

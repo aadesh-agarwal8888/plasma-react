@@ -18,6 +18,7 @@ import axios from "axios";
 import config from "./config";
 import DonationStatus from "./DonationStatus";
 import ErrorIcon from "@material-ui/icons/ErrorOutlineRounded";
+import Loading from "./Loading";
 
 
 const StyledTableCell = withStyles((theme) => ({
@@ -57,13 +58,15 @@ class Donations extends Component {
         },
         donationsTableHeader: ["Patient Name", "Patient Location", "Donation Date", "Status"],
         donations: [],
-        activeDonation: true,
+        activeDonation: false,
         donationStatus: {
             msg: "",
             status: 0,
             color: ""
         },
-        confirmationStatusDialog: false
+        confirmationStatusDialog: false,
+        loading: true,
+        loadingMsg: "Fetching your donations..."
     }
 
     componentDidMount() {
@@ -83,9 +86,14 @@ class Donations extends Component {
                 this.setState({
                     patientDetails,
                     donations,
-                    activeDonation
+                    activeDonation,
+                    loading: false
                 })
             }
+        }).catch(err => {
+            console.log(err.response.data);
+            alert("Some Error occured!");
+            window.location.reload();
         })
     }
 
@@ -119,17 +127,16 @@ class Donations extends Component {
     }
 
     getDonationStatusHeader = () => {
-        var { patientDetails } = this.state;
-        var length = patientDetails
+        var { activeDonation } = this.state;
         var color = "red";
-        var msg = "A Donor is waiting for you!";
-        if (length == 0) {
+        var msg = "A Patient is waiting for you!";
+        if (!activeDonation) {
             color = "green";
-            msg = "Currently no donations in your calender."
+            msg = "Currently there are no donations in your calender."
         }
 
         return (
-            <Grid container alignItems="center" justify="center" style={{ border: "2px solid red", padding: 7, marginBottom: 10 }}>
+            <Grid container alignItems="center" justify="center" style={{ border: `2px solid ${color}`, padding: 7, marginBottom: 10 }}>
                 <Grid item >
                     <ErrorIcon style={{ height: 40, width: 40, color: color, marginBottom: 0, marginRight: 10 }}></ErrorIcon>
                 </Grid>
@@ -140,21 +147,40 @@ class Donations extends Component {
         )
     }
 
+    getDonationStatusComponent = (status) => {
+        var status = this.getDonationStatus(status);
+        return (
+            <Grid container alignItems="center" justify="flex-start" spacing={1} >
+                <Grid item >
+                    <span style={{ height: 10, width: 10, backgroundColor: status.color, borderRadius: "50%", display: "inline-block" }}></span>
+                </Grid>
+                <Grid item >
+                    {status.msg}
+                </Grid>
+            </Grid>
+        )
+    }
+
     render() {
         var { classes } = this.props
+        if (this.state.loading) {
+            return (
+                <Loading loading={this.state.loading} msg={this.state.loadingMsg}></Loading>
+            );
+        }
         return (
             <React.Fragment>
-                {this.state.activeDonation && this.state.patientDetails.Receiver_Details &&
-                    <>
-                        {this.getDonationStatusHeader()}
+                <>
+                    {this.getDonationStatusHeader()}
+                    {this.state.activeDonation && this.state.patientDetails.Receiver_Details &&
                         <DonationStatus
                             personDetails={this.state.patientDetails.Receiver_Details}
                             donationDetails={this.state.patientDetails.Donation_Details}
                             isDonor={true}
                             handleDonationStatusBtn={this.handleDonationStatusBtn}
                         ></DonationStatus>
-                    </>
-                }
+                    }
+                </>
 
                 <Typography
                     variant="caption"
@@ -180,21 +206,8 @@ class Donations extends Component {
                                     <StyledTableCell>{donation.Receiver_Details.Name}</StyledTableCell>
                                     <StyledTableCell>{`${donation.Receiver_Details.Address.Street},${donation.Receiver_Details.Address.City},${donation.Receiver_Details.Address.State},${donation.Receiver_Details.Address.Pincode}`}</StyledTableCell>
                                     <StyledTableCell>{donation.Donation_Details.Date_Of_Completion}</StyledTableCell>
-                                    {/* <StyledTableCell>{() => {
-                                        var status = this.getDonationStatus(donation.Donation_Details.Status);
-                                        return status.msg;
-                                        return (
-                                            <Grid container alignItems="center" justify="flex-start" spacing={1} >
-                                                <Grid item >
-                                                    <span style={{ height: 10, width: 10, backgroundColor: status.color, borderRadius: "50%", display: "inline-block" }}></span>
-                                                </Grid>
-                                                <Grid item >
-                                                    {status.msg}
-                                                </Grid>
-                                            </Grid>
-                                        )
-                                    }}</StyledTableCell> */}
-                                    <StyledTableCell>{this.getDonationStatus(donation.Donation_Details.Status).msg}</StyledTableCell>
+                                    <StyledTableCell>{this.getDonationStatusComponent(donation.Donation_Details.Status)}</StyledTableCell>
+                                    {/* <StyledTableCell>{this.getDonationStatus(donation.Donation_Details.Status).msg}</StyledTableCell> */}
                                 </StyledTableRow>
                             ))}
                         </TableBody>

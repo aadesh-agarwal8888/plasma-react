@@ -18,7 +18,7 @@ import DetailsDialog from "./DetailsDialog";
 import ConfirmationDialog from "./ConfirmationDialog";
 import axios from "axios";
 import config from "./config";
-
+import Loading from "./Loading"
 const StyledTableCell = withStyles((theme) => ({
     head: {
         backgroundColor: theme.palette.primary.main,
@@ -47,7 +47,7 @@ const styles = theme => ({
 });
 class Receiver extends Component {
     state = {
-        loading: false,
+        loading: true,
         registered: false,
         donorsTableHeader: ["Donor Name", "Donor Contact", ""],
         donors: [],
@@ -55,7 +55,7 @@ class Receiver extends Component {
         completeConfirmationDialog: false,
         detailsDialog: false,
         errMsg: "",
-        loadingMsg: ""
+        loadingMsg: "Checking Registration..."
     }
 
     componentDidMount() {
@@ -66,25 +66,38 @@ class Receiver extends Component {
         return axios.get(`${config.baseUrl}/home/receiver`).then(res => {
             this.setState({
                 registered: res.data.registered,
-                loading: false
             })
             if (res.data.registered) {
+                this.setState({
+                    loadingMsg: "Fetching donor list...",
+                })
                 axios.get(`${config.baseUrl}/home/receiver/find-donors`).then(res => {
-                    if (res.data) {
 
-                        this.setState({
-                            donors: res.data
-                        })
-                    }
+                    this.setState({
+                        donors: res.data ? res.data : [],
+                        loading: false
+                    })
+
                 }).catch(err => {
                     this.setState({
-                        errMsg: err.response.data
+                        errMsg: err.response.data,
+                        loading: false
                     })
                     console.log("error fetching receivers: ", err);
                 })
             }
+            else {
+
+                this.setState({
+                    loading: false
+                })
+            }
         }).catch(err => {
             console.log(err);
+            this.setState({
+                loading: false
+            })
+            window.location.reload()
         })
     }
 
@@ -126,6 +139,14 @@ class Receiver extends Component {
 
     render() {
         const { classes } = this.props
+
+        if (this.state.loading) {
+            return (
+                <Loading loading={this.state.loading} msg={this.state.loadingMsg}></Loading>
+            );
+        }
+
+
         return (
             <React.Fragment>
                 {!this.state.registered ? (
